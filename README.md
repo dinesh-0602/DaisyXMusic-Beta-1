@@ -1,3 +1,4 @@
+#Hello Guys This Update is in Beta so just try it and report to group
 
 <h1 align="centre"> DAISYXMUSIC V5.5 🎵 </h1> 
 
@@ -29,9 +30,9 @@
 
 ### 💜 Heroku/Railway
 
-[![Deploy+on+Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/TeamDaisyX/DaisyXMusic/tree/Py-Tgcalls(main))
+[![Deploy+on+Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/TeamDaisyX/DaisyXMusic-Beta/tree/Py-Tgcalls(main))
 
-[![Deploy+on+Railway](https://railway.app/button.svg)](https://railway.app/new/template?template=https://github.com/TeamDaisyX/DaisyXMusic/tree/Py-Tgcalls(main)&envs=SESSION_NAME,BOT_TOKEN,BOT_USERNAME,BOT_NAME,SUPPORT_GROUP,PROJECT_NAME,ARQ_API_KEY,ASSISTANT_NAME,BG_IMAGE,UPDATES_CHANNEL,API_ID,PMPERMIT,API_HASH,SUDO_USERS,DURATION_LIMIT)
+[![Deploy+on+Railway](https://railway.app/button.svg)](https://railway.app/new/template?template=https://github.com/TeamDaisyX/DaisyXMusic-Beta/tree/Py-Tgcalls(main)&envs=SESSION_NAME,BOT_TOKEN,BOT_USERNAME,BOT_NAME,SUPPORT_GROUP,PROJECT_NAME,ARQ_API_KEY,ASSISTANT_NAME,BG_IMAGE,UPDATES_CHANNEL,API_ID,PMPERMIT,API_HASH,SUDO_USERS,DURATION_LIMIT)
 
 
 
