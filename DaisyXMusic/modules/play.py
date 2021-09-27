@@ -66,9 +66,8 @@ def cb_admin_check(func: Callable) -> Callable:
         admemes = a.get(cb.message.chat.id)
         if cb.from_user.id in admemes:
             return await func(client, cb)
-        else:
-            await cb.answer("You ain't allowed!", show_alert=True)
-            return
+        await cb.answer("You ain't allowed!", show_alert=True)
+        return
 
     return decorator
 
@@ -105,8 +104,7 @@ def changeImageSize(maxWidth, maxHeight, image):
     heightRatio = maxHeight / image.size[1]
     newWidth = int(widthRatio * image.size[0])
     newHeight = int(heightRatio * image.size[1])
-    newImage = image.resize((newWidth, newHeight))
-    return newImage
+    return image.resize((newWidth, newHeight))
 
 
 async def generate_cover(requested_by, title, views, duration, thumbnail):
@@ -145,13 +143,11 @@ async def generate_cover(requested_by, title, views, duration, thumbnail):
 async def playlist(client, message):
     global que
     if message.chat.id in DISABLED_GROUPS:
-        return    
+        return
     queue = que.get(message.chat.id)
     if not queue:
         await message.reply_text("Player is idle")
-    temp = []
-    for t in queue:
-        temp.append(t)
+    temp = [t for t in queue]
     now_playing = temp[0][0]
     by = temp[0][1].mention(style="md")
     msg = "**Now Playing** in {}".format(message.chat.title)
@@ -188,11 +184,7 @@ def updated_stats(chat, queue, vol=100):
 
 
 def r_ply(type_):
-    if type_ == "play":
-        pass
-    else:
-        pass
-    mar = InlineKeyboardMarkup(
+    return InlineKeyboardMarkup(
         [
             [
                 InlineKeyboardButton("⏹", "leave"),
@@ -208,7 +200,6 @@ def r_ply(type_):
             ],
         ]
     )
-    return mar
 
 
 @Client.on_message(filters.command("current") & filters.group & ~filters.edited)
@@ -228,11 +219,9 @@ async def ee(client, message):
 async def settings(client, message):
     if message.chat.id in DISABLED_GROUPS:
         await message.reply("Music Player is Disabled")
-        return    
-    playing = None
+        return
     chat_id = get_chat_id(message.chat)
-    if chat_id in callsmusic.pytgcalls.active_calls:
-        playing = True
+    playing = True if chat_id in callsmusic.pytgcalls.active_calls else None
     queue = que.get(chat_id)
     stats = updated_stats(message.chat, queue)
     if stats:
@@ -262,9 +251,9 @@ async def hfmm(_, message):
         return
     status = message.text.split(None, 1)[1]
     message.chat.id
-    if status == "ON" or status == "on" or status == "On":
+    if status in ["ON", "on", "On"]:
         lel = await message.reply("`Processing...`")
-        if not message.chat.id in DISABLED_GROUPS:
+        if message.chat.id not in DISABLED_GROUPS:
             await lel.edit("Music Player Already Activated In This Chat")
             return
         DISABLED_GROUPS.remove(message.chat.id)
@@ -272,9 +261,9 @@ async def hfmm(_, message):
             f"Music Player Successfully Enabled For Users In The Chat {message.chat.id}"
         )
 
-    elif status == "OFF" or status == "off" or status == "Off":
+    elif status in ["OFF", "off", "Off"]:
         lel = await message.reply("`Processing...`")
-        
+
         if message.chat.id in DISABLED_GROUPS:
             await lel.edit("Music Player Already turned off In This Chat")
             return
@@ -300,9 +289,7 @@ async def p_cb(b, cb):
         queue = que.get(cb.message.chat.id)
         if not queue:
             await cb.message.edit("Player is idle")
-        temp = []
-        for t in queue:
-            temp.append(t)
+        temp = [t for t in queue]
         now_playing = temp[0][0]
         by = temp[0][1].mention(style="md")
         msg = "**Now Playing** in {}".format(cb.message.chat.title)
@@ -367,9 +354,7 @@ async def m_cb(b, cb):
         queue = que.get(cb.message.chat.id)
         if not queue:
             await cb.message.edit("Player is idle")
-        temp = []
-        for t in queue:
-            temp.append(t)
+        temp = [t for t in queue]
         now_playing = temp[0][0]
         by = temp[0][1].mention(style="md")
         msg = "**Now Playing** in {}".format(cb.message.chat.title)
@@ -447,17 +432,16 @@ async def m_cb(b, cb):
                     f"- Skipped track\n- Now Playing **{qeue[0][0]}**"
                 )
 
-    else:
-        if chet_id in callsmusic.pytgcalls.active_calls:
-            try:
-                queues.clear(chet_id)
-            except QueueEmpty:
-                pass
+    elif chet_id in callsmusic.pytgcalls.active_calls:
+        try:
+            queues.clear(chet_id)
+        except QueueEmpty:
+            pass
 
-            await callsmusic.pytgcalls.leave_group_call(chet_id)
-            await cb.message.edit("Successfully Left the Chat!")
-        else:
-            await cb.answer("Chat is not connected!", show_alert=True)
+        await callsmusic.pytgcalls.leave_group_call(chet_id)
+        await cb.message.edit("Successfully Left the Chat!")
+    else:
+        await cb.answer("Chat is not connected!", show_alert=True)
 
 
 @Client.on_message(command("play") & other_filters)
@@ -465,7 +449,7 @@ async def play(_, message: Message):
     global que
     global useer
     if message.chat.id in DISABLED_GROUPS:
-        return    
+        return
     lel = await message.reply("🔄 **Processing**")
     administrators = await get_administrators(message.chat)
     chid = message.chat.id
@@ -486,7 +470,6 @@ async def play(_, message: Message):
                     await lel.edit(
                         "<b>Remember to add helper to your channel</b>",
                     )
-                    pass
                 try:
                     invitelink = await _.export_chat_invite_link(chid)
                 except:
@@ -525,9 +508,10 @@ async def play(_, message: Message):
     if message.reply_to_message:
         entities = []
         toxt = message.reply_to_message.text or message.reply_to_message.caption
-        if message.reply_to_message.entities:
-            entities = message.reply_to_message.entities + entities
-        elif message.reply_to_message.caption_entities:
+        if (
+            message.reply_to_message.entities
+            or message.reply_to_message.caption_entities
+        ):
             entities = message.reply_to_message.entities + entities
         urls = [entity for entity in entities if entity.type == 'url']
         text_links = [
@@ -616,15 +600,13 @@ async def play(_, message: Message):
         )
         requested_by = message.from_user.first_name
         await generate_cover(requested_by, title, views, duration, thumbnail)
-        file_path = await convert(youtube.download(url))        
+        file_path = await convert(youtube.download(url))
     else:
-        query = ""
-        for i in message.command[1:]:
-            query += " " + str(i)
+        query = "".join(" " + str(i) for i in message.command[1:])
         print(query)
         await lel.edit("🎵 **Processing**")
         ydl_opts = {"format": "bestaudio/best"}
-        
+
         try:
           results = YoutubeSearch(query, max_results=5).to_dict()
         except:
@@ -632,17 +614,15 @@ async def play(_, message: Message):
         # Looks like hell. Aren't it?? FUCK OFF
         try:
             toxxt = "**Select the song you want to play**\n\n"
-            j = 0
             useer=user_name
             emojilist = ["1️⃣","2️⃣","3️⃣","4️⃣","5️⃣",]
 
-            while j < 5:
+            for j in range(5):
                 toxxt += f"{emojilist[j]} **Title - [{results[j]['title']}](https://youtube.com{results[j]['url_suffix']})**\n"
                 toxxt += f" ╚ **Duration** - {results[j]['duration']}\n"
                 toxxt += f" ╚ **Views** - {results[j]['views']}\n"
                 toxxt += f" ╚ **Channel** - {results[j]['channel']}\n\n"
 
-                j += 1            
             koyboard = InlineKeyboardMarkup(
                 [
                     [
@@ -658,14 +638,14 @@ async def play(_, message: Message):
                         InlineKeyboardButton(text="❌ Close", callback_data="cls")
                     ],
                 ]
-            )       
+            )
             await lel.edit(toxxt,reply_markup=koyboard,disable_web_page_preview=True)
             # WHY PEOPLE ALWAYS LOVE PORN ?? (A point to think)
             return
-            # Returning to pornhub
+                    # Returning to pornhub
         except:
             await lel.edit("No Enough results to choose.. Starting direct play..")
-                        
+
             # print(results)
             try:
                 url = f"https://youtube.com{results[0]['url_suffix']}"
@@ -703,7 +683,7 @@ async def play(_, message: Message):
             )
             requested_by = message.from_user.first_name
             await generate_cover(requested_by, title, views, duration, thumbnail)
-            file_path = await convert(youtube.download(url))   
+            file_path = await convert(youtube.download(url))
     chat_id = get_chat_id(message.chat)
     if chat_id in callsmusic.pytgcalls.active_calls:
         position = await queues.put(chat_id, file=file_path)
@@ -718,8 +698,6 @@ async def play(_, message: Message):
             caption=f"#⃣ Your requested song **queued** at position {position}!",
             reply_markup=keyboard,
         )
-        os.remove("final.png")
-        return await lel.delete()
     else:
         chat_id = get_chat_id(message.chat)
         que[chat_id] = []
@@ -741,8 +719,9 @@ async def play(_, message: Message):
                 message.from_user.mention()
             ),
         )
-        os.remove("final.png")
-        return await lel.delete()
+
+    os.remove("final.png")
+    return await lel.delete()
 
 
 @Client.on_message(filters.command("ytplay") & filters.group & ~filters.edited)
@@ -770,7 +749,6 @@ async def ytplay(_, message: Message):
                     await lel.edit(
                         "<b>Remember to add helper to your channel</b>",
                     )
-                    pass
                 try:
                     invitelink = await _.export_chat_invite_link(chid)
                 except:
@@ -807,11 +785,9 @@ async def ytplay(_, message: Message):
     await lel.edit("🔎 **Finding**")
     user_id = message.from_user.id
     user_name = message.from_user.first_name
-     
 
-    query = ""
-    for i in message.command[1:]:
-        query += " " + str(i)
+
+    query = "".join(" " + str(i) for i in message.command[1:])
     print(query)
     await lel.edit("🎵 **Processing**")
     ydl_opts = {"format": "bestaudio/best"}
@@ -868,8 +844,6 @@ async def ytplay(_, message: Message):
             caption=f"#⃣ Your requested song **queued** at position {position}!",
             reply_markup=keyboard,
         )
-        os.remove("final.png")
-        return await lel.delete()
     else:
         chat_id = get_chat_id(message.chat)
         que[chat_id] = []
@@ -891,8 +865,9 @@ async def ytplay(_, message: Message):
                 message.from_user.mention()
             ),
         )
-        os.remove("final.png")
-        return await lel.delete()
+
+    os.remove("final.png")
+    return await lel.delete()
     
 
 @Client.on_message(filters.command("splay") & filters.group & ~filters.edited)
